@@ -4,8 +4,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <math.h>
-#include <ctype.h>
 #include <stdbool.h>
+#include <ctype.h>
 #include <string.h>
 #include <float.h>
 
