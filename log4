@@ -1,0 +1,24 @@
+ESTIMATE of time to complete assignment: 32 hours
+
+      Time     Time
+Date  Started  Spent Work completed
+----  -------  ----  --------------
+10/29 7:00pm   0:30  skimmed assignment.
+
+10/30 8:00pm   3:30  began work planning out Blotto, creating Makefile with smap_array.c
+
+11/3  4:00pm   4:00  completed draft of Blotto
+
+11/4  7:00pm   5:00  fixed some problems with Blotto, started wrapping my head around the ADT
+
+11/5  6:30pm   5:00  continued work on ADT, got confused, gave up
+
+11/6  7:30pm   8:00  picked up where I left off, completed draft of ADT
+
+11/7  5:00pm   6:00  worked out errors in valgrind and with submitting Blotto
+               ----
+               32:00 TOTAL time spent
+
+I discussed my solution with Kevin Rono, Daly Joseph, Jonathan Jalbert, Alina Kramp, Leslie Espinoza, and Pablo Garza.
+
+For me, the problems with this pset came with the planning. Blotto is basically one big arithmetic problem where your data is scattered throughout a bunch of different arrays and hashmaps. Wrapping my head around accessing elements in a hashmap was a battle in and of itself, but once I understood that, Blotto became a traditional, fun coding problem. As for ADT, freeing the right elements at the right times also presented a problem, as that whole concept (malloc'ing and freeing) is novel and unintuitive to me. A final problem I ran into was when I was submitting Blotto –– while it would make normally in my terminal –– none of the test cases would run because they were immediately killed. Once I got Blotto up and running, I ran into more trouble with the invalid input cases, and I had to first familiarize myself with the switch structure of entry.c. I ended up, however, solving most of those problems not in entry.c itself but in error-targeted conditionals in blotto.c. My last couple errors were with an error I could not pinpoint within qsort, and it ended up being because I was typecasting doubles as ints and thus losing precision. Finally, a few valgrind errors later (all having to do with freeing at the right times), I was passing the 36 test cases.
