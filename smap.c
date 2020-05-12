@@ -42,7 +42,7 @@ int smap_default_hash(const char *s)
 	unsigned const char *us;
 
 	us = (unsigned const char *) s;
-	 h = 0;
+	h = 0;
 
 	while (*us != '\0')
 	{
@@ -68,16 +68,16 @@ smap *smap_create(int (*h)(const char *s))
 
 		if (result != NULL)
 		{
-		    	 result->count = 0;
-		    		result->hash = h;
-		     result->entries = malloc(sizeof(entry) * SMAP_INITIAL_CAPACITY);
-		    result->capacity = (result->entries != NULL ? SMAP_INITIAL_CAPACITY : 0);
+		  result->count = 0;
+		  result->hash = h;
+		  result->entries = malloc(sizeof(entry) * SMAP_INITIAL_CAPACITY);
+		  result->capacity = (result->entries != NULL ? SMAP_INITIAL_CAPACITY : 0);
 
-		    for (int i = 0; i < result->capacity; i++)
-		    {
-		    	result->entries[i].occupied = false;
-		    	 result->entries[i].deleted = false;
-		    }
+		  for (int i = 0; i < result->capacity; i++)
+		  {
+		  	result->entries[i].occupied = false;
+		  	result->entries[i].deleted = false;
+		  }
 		}
 		else
 		{
@@ -128,15 +128,15 @@ int smap_table_get_key_index(const entry *entries, const char *key, int (*hash)(
  */
 void smap_table_add(entry *entries, const char *key, void *value, int (*hash)(const char *), int capacity)
 {
-			int index = smap_table_get_key_index(entries, key, hash, capacity);
+	int index = smap_table_get_key_index(entries, key, hash, capacity);
 	char *new_key = malloc(strlen(key) + 1);
 
 	strcpy(new_key, key);
 
-			 entries[index].key = new_key;
-		 entries[index].value = value;
+	entries[index].key = new_key;
+	entries[index].value = value;
 	entries[index].occupied = true;
-	 entries[index].deleted = false;
+	entries[index].deleted = false;
 }
 
 void smap_embiggen(smap *m)
@@ -148,7 +148,7 @@ void smap_embiggen(smap *m)
 		for (int i = 0; i < m->capacity*2; i++)
 		{
 			bigger[i].occupied = false;
-			 bigger[i].deleted = false;
+			bigger[i].deleted = false;
 		}
 		for (int i = 0; i < m->capacity; i++)
 		{
@@ -165,7 +165,7 @@ void smap_embiggen(smap *m)
 		exit(0);
 	}
 	entry *temp = m->entries;
-	 m->entries = bigger;
+	m->entries = bigger;
 
 	m->capacity *= 2;
 	free(temp);
@@ -180,7 +180,7 @@ void smap_shrink(smap *m)
 		for (int i = 0; i < m->capacity/2; i++)
 		{
 			smaller[i].occupied = false;
-			 smaller[i].deleted = false;
+  		smaller[i].deleted = false;
 		}
 		for (int i = 0; i < m->capacity; i++)
 		{
@@ -197,7 +197,7 @@ void smap_shrink(smap *m)
 		exit(0);
 	}
 	entry *temp = m->entries;
-	 m->entries = smaller;
+	m->entries = smaller;
 	
 	m->capacity /= 2;
 	free(temp);

@@ -14,7 +14,7 @@
 
 typedef struct player
 {
-		char *name;
+	char *name;
 	double *score_and_wins;
 } player;
 
@@ -70,13 +70,13 @@ int compare_by_wins(const void *p1, const void *p2)
 	}
 }
 
-/*
-	@map smap of the blotto players and their distributions
-	@param p1, p2 two keys: the names of the players
-	@param battle_worths the value of each battlefield
-	@param num_battlefields the number of battles
-	Calculates the winner based on points
-	@return a double array of the players points in the order given
+/**
+* Calculates the winner based on points
+*	@param map smap of the blotto players and their distributions
+*	@param p1, p2 two keys: the names of the players
+*	@param battle_worths the value of each battlefield
+*	@param num_battlefields the number of battles
+*	@return a double array of the players points in the order given
 */
 double *calc_battle(smap *map, int num_battlefields, int* battle_worths, char* p1, char* p2)
 {
@@ -142,12 +142,12 @@ int main(int argc, char **argv)
 		count++;
 	}
 
-	// 			 map:	names, distributions
+	// map:	names, distributions
 	// score_map: names, arrays of [score, wins, total games]
-				smap *map = smap_create(*smap_default_hash);
+	smap *map = smap_create(*smap_default_hash);
 	smap *score_map = smap_create(*smap_default_hash);
 	
-					 int num_coins = 0;
+	int num_coins = 0;
 	bool num_coins_defined = false;
 
 	char c;
@@ -158,8 +158,7 @@ int main(int argc, char **argv)
 		entry_id e = entry_read(stdin, 33, num_battlefields);
 
 
-		if (e.id != NULL && strcmp(e.id, "") != 0 
-										 && e.distribution != NULL && strlen(e.id) <= 32)
+		if (e.id != NULL && strcmp(e.id, "") != 0 && e.distribution != NULL && strlen(e.id) <= 32)
 		{
 			for (int i = 0; i < 32; i++)
 			{
@@ -202,9 +201,10 @@ int main(int argc, char **argv)
 	}
 
 	// processing matchups
-			char *buffer = NULL;
-			 size_t size = 0;
+	char *buffer = NULL;
+	size_t size = 0;
 	int num_faceoffs = 0;
+
 	while ((getline(&buffer, &size, matchups) != -1))
 	{
 		char p1_big[40];
@@ -245,7 +245,7 @@ int main(int argc, char **argv)
 			return 1;
 		}
 
-			 double *score = calc_battle(map, num_battlefields, battle_worths, p1, p2);
+		double *score = calc_battle(map, num_battlefields, battle_worths, p1, p2);
 		double *p1_score = smap_get(score_map, p1);
 		double *p2_score = smap_get(score_map, p2);
 
@@ -278,21 +278,20 @@ int main(int argc, char **argv)
 	fclose(matchups);
 		
 
-	/* 
-	Creating array of players
-	Each of which has a name and a double array containing
-	at position 0 their score, and at position 1 their win count 
+	/* Creating array of players
+	 * Each of which has a name and a double array containing
+	 * at position 0 their score, and at position 1 their win count 
 	*/
 	if (smap_size(score_map) != 0)
 	{
-						 int score_size = smap_size(score_map);
+		int score_size = smap_size(score_map);
 		const char **score_keys = smap_keys(score_map);
-						player *players = calloc(score_size, sizeof(player)); 
+		player *players = calloc(score_size, sizeof(player)); 
 		
 		// consolidates the spread-out data from the score_map hashmap into a traversable array
 		for (int i = 0; i < score_size; i++)
 		{
-								players[i].name = strdup(score_keys[i]);
+			players[i].name = strdup(score_keys[i]);
 			players[i].score_and_wins = smap_get(score_map, score_keys[i]);
 		}
 
