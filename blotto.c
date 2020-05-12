@@ -15,7 +15,7 @@
 typedef struct player
 {
 	char *name;
-	double *score_and_wins;
+	double *score_and_wins; // [score, wins, total games]
 } player;
 
 
