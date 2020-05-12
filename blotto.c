@@ -8,15 +8,14 @@
 #include <ctype.h>
 #include <string.h>
 #include <float.h>
-
 #include "smap.h"
 #include "entry.h"
 
 
 typedef struct player
 {
-	char* name;
-	double* score_and_wins;
+		char *name;
+	double *score_and_wins;
 } player;
 
 
@@ -31,6 +30,7 @@ int compare_by_score(const void *p1, const void *p2)
 {
 	double p1_s = ((struct player *)p1)->score_and_wins[0] / ((struct player *)p1)->score_and_wins[2];
 	double p2_s = ((struct player *)p2)->score_and_wins[0] / ((struct player *)p2)->score_and_wins[2];
+
 	char *p1_n = ((struct player *)p1)->name;
 	char *p2_n = ((struct player *)p2)->name;
 
@@ -52,6 +52,7 @@ int compare_by_wins(const void *p1, const void *p2)
 {
 	double p1_w = ((struct player *)p1)->score_and_wins[1] / ((struct player *)p1)->score_and_wins[2];
 	double p2_w = ((struct player *)p2)->score_and_wins[1] / ((struct player *)p2)->score_and_wins[2];
+
 	char *p1_n = ((struct player *)p1)->name;
 	char *p2_n = ((struct player *)p2)->name;
 
@@ -69,14 +70,19 @@ int compare_by_wins(const void *p1, const void *p2)
 	}
 }
 
-// takes two keys, the names of the players
-// and the value of each battlefield
-// and the number of battles
-// calculates the winner based on points
-// returns a double array of the players points in the order given
+/*
+	@map smap of the blotto players and their distributions
+	@param p1, p2 two keys: the names of the players
+	@param battle_worths the value of each battlefield
+	@param num_battlefields the number of battles
+	Calculates the winner based on points
+	@return a double array of the players points in the order given
+*/
 double *calc_battle(smap *map, int num_battlefields, int* battle_worths, char* p1, char* p2)
 {
+	// leaving third position open for total faceoffs later
 	double *points = calloc(3, sizeof(double));
+
 	int* p1_moves = smap_get(map, p1);
 	int* p2_moves = smap_get(map, p2);
 
@@ -103,6 +109,7 @@ double *calc_battle(smap *map, int num_battlefields, int* battle_worths, char* p
 int main(int argc, char **argv)
 {
 
+	// INVALID INPUT CHECKING
 	if (argc < 4)
 	{
 		fprintf(stderr, "Not enough arguments\n");
@@ -122,8 +129,12 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	// CONDUCTING BATTLES
+
+	// instantiating and filling battle_worths with stdin, e.g. [1, 2, 3, 4]
 	int num_battlefields = argc - 3;
 	int battle_worths[num_battlefields];
+	
 	int count = 3;
 	for (int i = 0; i < num_battlefields; i++)
 	{
@@ -131,19 +142,24 @@ int main(int argc, char **argv)
 		count++;
 	}
 
-	smap *map = smap_create(*smap_default_hash);
+	// 			 map:	names, distributions
+	// score_map: names, arrays of [score, wins, total games]
+				smap *map = smap_create(*smap_default_hash);
 	smap *score_map = smap_create(*smap_default_hash);
-	char c;
-	int num_coins = 0;
+	
+					 int num_coins = 0;
 	bool num_coins_defined = false;
 
+	char c;
 	while ((c = getchar()) != EOF)
 	{
 		ungetc(c, stdin);
-		entry_id e = entry_read(stdin, 33, num_battlefields);
 		char e32[32];
+		entry_id e = entry_read(stdin, 33, num_battlefields);
 
-		if (e.id != NULL && strcmp(e.id, "") != 0 && e.distribution != NULL && strlen(e.id) <= 32)
+
+		if (e.id != NULL && strcmp(e.id, "") != 0 
+										 && e.distribution != NULL && strlen(e.id) <= 32)
 		{
 			for (int i = 0; i < 32; i++)
 			{
@@ -158,6 +174,8 @@ int main(int argc, char **argv)
 			fprintf(stderr, "Error (null entry)\n");
 			return 1;
 		}
+
+		// verifying equal wallets
 		if (!num_coins_defined)
 		{
 			for (int i = 0; i < num_battlefields; i++)
@@ -178,18 +196,20 @@ int main(int argc, char **argv)
 			fprintf(stderr, "Inconsistent wallets\n");
 			return 1;
 		}
+		//
 
 		free(e.id);
 	}
 
-	// PROCESSING MATCHUPS
-	char *buffer = NULL;
-	size_t size = 0;
+	// processing matchups
+			char *buffer = NULL;
+			 size_t size = 0;
 	int num_faceoffs = 0;
 	while ((getline(&buffer, &size, matchups) != -1))
 	{
 		char p1_big[40];
 		char p2_big[40];
+
 		int s = sscanf(buffer, "%s %s", p1_big, p2_big);
 
 		if (strlen(p1_big) > 32 || strlen(p2_big) > 32)
@@ -198,14 +218,17 @@ int main(int argc, char **argv)
 			return 1;
 		}
 
+		// creating player IDs
 		char p1[32];
 		char p2[32];
+
 		for (int i = 0; i < 32; i++)
 		{
 			p1[i] = p1_big[i];
 			p2[i] = p2_big[i];
 		}
 
+		// increasing number of battles (faceoffs)
 		if (s == 2)
 		{
 			num_faceoffs++;
@@ -221,7 +244,8 @@ int main(int argc, char **argv)
 			fprintf(stderr, "Invalid matchup ID\n");
 			return 1;
 		}
-		double *score = calc_battle(map, num_battlefields, battle_worths, p1, p2);
+
+			 double *score = calc_battle(map, num_battlefields, battle_worths, p1, p2);
 		double *p1_score = smap_get(score_map, p1);
 		double *p2_score = smap_get(score_map, p2);
 
@@ -253,27 +277,35 @@ int main(int argc, char **argv)
 
 	fclose(matchups);
 		
+
+	/* 
+	Creating array of players
+	Each of which has a name and a double array containing
+	at position 0 their score, and at position 1 their win count 
+	*/
 	if (smap_size(score_map) != 0)
 	{
-			// creating array of players
-			// each of which has a name and a double array containing
-			// at position 0 their score, and at position 1 their win count
-		int score_size = smap_size(score_map);
-		const char **score_keys = smap_keys(score_map); // remember to free this!
-		player *players = calloc(score_size, sizeof(player)); // free this too
+						 int score_size = smap_size(score_map);
+		const char **score_keys = smap_keys(score_map);
+						player *players = calloc(score_size, sizeof(player)); 
+		
+		// consolidates the spread-out data from the score_map hashmap into a traversable array
 		for (int i = 0; i < score_size; i++)
 		{
-			players[i].name = strdup(score_keys[i]);
+								players[i].name = strdup(score_keys[i]);
 			players[i].score_and_wins = smap_get(score_map, score_keys[i]);
 		}
 
+		// results by score average
 		if (strcmp(argv[2], "score") == 0)
 		{
 			qsort((void*)players, score_size, sizeof(players[0]), compare_by_score);
 
+			// justified formatting
 			for (int i = 0; i < score_size; i++)
 			{
 				double s = players[i].score_and_wins[0] / players[i].score_and_wins[2];
+
 				if (s < 10)
 				{
 					printf("  ");
@@ -282,9 +314,11 @@ int main(int argc, char **argv)
 				{
 					printf(" ");
 				}
+
 				printf("%.3lf %s\n", s, players[i].name);
 			}
 		}
+		// results by win average
 		else if (strcmp(argv[2], "win") == 0)
 		{
 			qsort((void*)players, score_size, sizeof(players[0]), compare_by_wins);
@@ -292,6 +326,7 @@ int main(int argc, char **argv)
 			for (int i = 0; i < score_size; i++)
 			{
 				double s = players[i].score_and_wins[1] / players[i].score_and_wins[2];
+
 				if (s < 10)
 				{
 					printf("  ");
@@ -300,6 +335,7 @@ int main(int argc, char **argv)
 				{
 					printf(" ");
 				}
+				
 				printf("%.3lf %s\n", s, players[i].name);
 			}
 		}

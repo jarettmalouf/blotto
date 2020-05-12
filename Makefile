@@ -6,14 +6,14 @@ all : Blotto Unit clean
 Blotto : blotto.c entry.o smap.o 
 	${CC} ${CFLAGS} -lm -o $@ $^
 
-Unit : smap_unit.o smap.o smap_test_functions.o
+Unit : smap.o #smap_test_functions.o #smap_unit.o
 	${CC} ${CFLAGS} -lm -o $@ $^
 
-snap_unit.o : smap_unit.c smap_test_functions.h smap.h
-	${CC} ${CFLAGS} -c  smap_unit.c
+# snap_unit.o : smap_unit.c smap_test_functions.h smap.h
+# 	${CC} ${CFLAGS} -c  smap_unit.c
 
-smap_test_functions.o : smap_test_functions.c smap_test_functions.h
-	${CC} ${CFLAGS} -c  smap_test_functions.c
+# smap_test_functions.o : smap_test_functions.c smap_test_functions.h
+# 	${CC} ${CFLAGS} -c  smap_test_functions.c
 
 	
 entry.o : entry.c entry.h

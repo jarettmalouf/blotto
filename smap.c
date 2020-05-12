@@ -38,11 +38,12 @@ typedef struct smap
  */
 int smap_default_hash(const char *s)
 {
-	// ASPNES HASH
 	unsigned long h;
 	unsigned const char *us;
+
 	us = (unsigned const char *) s;
-	h = 0;
+	 h = 0;
+
 	while (*us != '\0')
 	{
 		h = h * 37 + *us;
@@ -64,17 +65,18 @@ smap *smap_create(int (*h)(const char *s))
 	if (h != NULL)
 	{
 		smap *result = malloc(sizeof(smap));
+
 		if (result != NULL)
 		{
-		    result->count = 0;
-		    result->hash = h;
-		    result->entries = malloc(sizeof(entry) * SMAP_INITIAL_CAPACITY);
+		    	 result->count = 0;
+		    		result->hash = h;
+		     result->entries = malloc(sizeof(entry) * SMAP_INITIAL_CAPACITY);
 		    result->capacity = (result->entries != NULL ? SMAP_INITIAL_CAPACITY : 0);
 
 		    for (int i = 0; i < result->capacity; i++)
 		    {
 		    	result->entries[i].occupied = false;
-		    	result->entries[i].deleted = false;
+		    	 result->entries[i].deleted = false;
 		    }
 		}
 		else
@@ -98,19 +100,6 @@ int smap_size(const smap *m)
 	return (m == NULL ? 0 : m->count);
 }
 
-/**
- * Adds a copy of the given key with value to this map.
- * If the key is already present then the old value is replaced.
- * The caller retains ownership of the value.  If key is new
- * and space could not be allocated then there is no effect on the map
- * and the return value is false.
- *
- * @param m a pointer to a map, non-NULL
- * @param key a string, non-NULL
- * @param value a pointer
- * @return true if the put was successful, false otherwise
- */
-
 // returns index of key in entries
 int smap_table_get_key_index(const entry *entries, const char *key, int (*hash)(const char *), int capacity)
 {
@@ -120,32 +109,46 @@ int smap_table_get_key_index(const entry *entries, const char *key, int (*hash)(
   	while (entries[i].occupied && (strcmp(entries[i].key, key) != 0))
   	{
    		i = (i + 1) % capacity;
- 	}
+ 		}
 
   	return i;
 }
 
+/**
+ * Adds a copy of the given key with value to this map.
+ * If the key is already present then the old value is replaced.
+ * The caller retains ownership of the value.  If key is new
+ * and space could not be allocated then there is no effect on the map
+ * and the return value is false.
+ *
+ * @param entries a pointer to a map's entries, non-NULL
+ * @param key a string, non-NULL
+ * @param value a pointer
+ * @return true if the put was successful, false otherwise
+ */
 void smap_table_add(entry *entries, const char *key, void *value, int (*hash)(const char *), int capacity)
 {
-	int index = smap_table_get_key_index(entries, key, hash, capacity);
+			int index = smap_table_get_key_index(entries, key, hash, capacity);
 	char *new_key = malloc(strlen(key) + 1);
+
 	strcpy(new_key, key);
 
-	entries[index].key = new_key;
-	entries[index].value = value;
+			 entries[index].key = new_key;
+		 entries[index].value = value;
 	entries[index].occupied = true;
-	entries[index].deleted = false;
+	 entries[index].deleted = false;
 }
 
 void smap_embiggen(smap *m)
 {
 	entry *bigger = malloc(sizeof(entry) * m->capacity*2);
+
 	if (bigger != NULL)
 	{
 		for (int i = 0; i < m->capacity*2; i++)
 		{
 			bigger[i].occupied = false;
-			bigger[i].deleted = false;
+			 bigger[i].deleted = false;
 		}
 		for (int i = 0; i < m->capacity; i++)
 		{
@@ -162,20 +165,22 @@ void smap_embiggen(smap *m)
 		exit(0);
 	}
 	entry *temp = m->entries;
-	m->entries = bigger;
-	free(temp);
+	 m->entries = bigger;
+
 	m->capacity *= 2;
+	free(temp);
 }
 
 void smap_shrink(smap *m)
 {
 	entry *smaller = malloc(sizeof(entry) * m->capacity/2);
+
 	if (smaller != NULL)
 	{
 		for (int i = 0; i < m->capacity/2; i++)
 		{
 			smaller[i].occupied = false;
-			smaller[i].deleted = false;
+			 smaller[i].deleted = false;
 		}
 		for (int i = 0; i < m->capacity; i++)
 		{
@@ -192,11 +197,13 @@ void smap_shrink(smap *m)
 		exit(0);
 	}
 	entry *temp = m->entries;
-	m->entries = smaller;
-	free(temp);
+	 m->entries = smaller;
+	
 	m->capacity /= 2;
+	free(temp);
 }
 
+// add function, but accounting for possible need to embiggen
 bool smap_put(smap *m, const char *key, void *value)
 {
 	int i = smap_table_get_key_index(m->entries, key, m->hash, m->capacity);
@@ -321,14 +328,14 @@ void smap_for_each(smap *m, void (*f)(const char *, void *, void *), void *arg)
 }
 
 /**
- * Returns a dynamically array containing pointers to the keys in the
+ * Returns a dynamically-alloc'd array with pointers to the keys in the
  * given map.  It is the caller's responsibility to free the array,
  * but the map retains ownership of the keys.  If there is a memory
  * allocation error then the returned value is NULL.  If the map is empty
  * then the returned value is NULL.
  *
  * @param m a pointer to a map, non NULL
- * @return a pointer to a dynamically allocated array of pointer to the keys
+ * @return a pointer to a dynamically alloc'd array of pointer to the keys
  */
 const char **smap_keys(smap *m)
 {
